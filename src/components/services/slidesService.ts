@@ -2,9 +2,16 @@ import { supabase } from '../../../supabase'
 import { Topic, Slide } from '../../app/types/database'
 
 export const slidesService = {
+  _ensureClient() {
+    if (!supabase) {
+      throw new Error('Supabase client is not configured. Ensure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY are set.')
+    }
+    return supabase
+  },
   async fetchTopicsWithSlides(): Promise<Topic[]> {
     try {
-      const { data: topics, error } = await supabase
+      const client = this._ensureClient()
+      const { data: topics, error } = await client
         .from('topics')
         .select(`
           *,
@@ -31,7 +38,8 @@ export const slidesService = {
 
   async addTopic(name: string): Promise<Topic | null> {
     try {
-      const { data, error } = await supabase
+      const client = this._ensureClient()
+      const { data, error } = await client
         .from('topics')
         .insert([{ name }])
         .select()
@@ -58,7 +66,8 @@ export const slidesService = {
     try {
       console.log('Adding slide with:', { topicId, title, imageUrl, bullets })
 
-      const { data: slide, error: slideError } = await supabase
+      const client = this._ensureClient()
+      const { data: slide, error: slideError } = await client
         .from('slides')
         .insert([
           {
@@ -87,7 +96,7 @@ export const slidesService = {
           }))
 
         if (bulletPointsData.length > 0) {
-          const { error: bulletsError } = await supabase
+          const { error: bulletsError } = await client
             .from('bullet_points')
             .insert(bulletPointsData)
 
@@ -100,7 +109,7 @@ export const slidesService = {
         }
       }
 
-      const { data: slideWithBullets, error: fetchError } = await supabase
+      const { data: slideWithBullets, error: fetchError } = await client
         .from('slides')
         .select(`
           *,
@@ -138,7 +147,8 @@ export const slidesService = {
 
       console.log('Uploading image:', { fileName, filePath, size: file.size })
 
-      const { data, error } = await supabase.storage
+      const client = this._ensureClient()
+      const { data, error } = await client.storage
         .from('slides-images') 
         .upload(filePath, file, {
           cacheControl: '3600',
@@ -150,7 +160,7 @@ export const slidesService = {
         throw error
       }
 
-      const { data: { publicUrl } } = supabase.storage
+      const { data: { publicUrl } } = await client.storage
         .from('slides-images')
         .getPublicUrl(filePath)
 
@@ -164,7 +174,8 @@ export const slidesService = {
 
   async updateSlide(slideId: number, updates: Partial<Slide>): Promise<boolean> {
     try {
-      const { error } = await supabase
+      const client = this._ensureClient()
+      const { error } = await client
         .from('slides')
         .update(updates)
         .eq('id', slideId)
@@ -183,7 +194,8 @@ export const slidesService = {
 
   async deleteSlide(slideId: number): Promise<boolean> {
     try {
-      const { error: bulletsError } = await supabase
+      const client = this._ensureClient()
+      const { error: bulletsError } = await client
         .from('bullet_points')
         .delete()
         .eq('slide_id', slideId)
@@ -193,7 +205,7 @@ export const slidesService = {
         throw bulletsError
       }
 
-      const { error: slideError } = await supabase
+      const { error: slideError } = await client
         .from('slides')
         .delete()
         .eq('id', slideId)
@@ -212,7 +224,8 @@ export const slidesService = {
 
   async updateBulletPoints(slideId: number, bullets: string[]): Promise<boolean> {
     try {
-      const { error: deleteError } = await supabase
+      const client = this._ensureClient()
+      const { error: deleteError } = await client
         .from('bullet_points')
         .delete()
         .eq('slide_id', slideId)
@@ -231,7 +244,7 @@ export const slidesService = {
             order_index: index
           }))
 
-        const { error: insertError } = await supabase
+        const { error: insertError } = await client
           .from('bullet_points')
           .insert(bulletPointsData)
 
@@ -249,7 +262,8 @@ export const slidesService = {
   },
 
   getImageUrl(path: string): string {
-    const { data: { publicUrl } } = supabase.storage
+    const client = this._ensureClient()
+    const { data: { publicUrl } } = client.storage
       .from('slides-images')
       .getPublicUrl(path)
     return publicUrl
@@ -257,7 +271,8 @@ export const slidesService = {
 
   async testConnection(): Promise<boolean> {
     try {
-      const { data, error } = await supabase
+      const client = this._ensureClient()
+      const { data, error } = await client
         .from('topics')
         .select('count')
         .limit(1)

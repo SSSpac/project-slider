@@ -1,7 +1,8 @@
+"use client";
+import React, { useState } from 'react';
 import { Topic, Slide } from './Slideshow';
-import { useState } from 'react';
 
-interface SlideContentProps {
+export interface SlideContentProps {
   currentTopic: Topic;
   currentSlide: Slide;
   currentSlideIndex: number;
@@ -13,7 +14,7 @@ interface SlideContentProps {
   onImageUpload: (file: File) => Promise<string | null>;
 }
 
-const SlideContent = ({
+const SlideContent: React.FC<SlideContentProps> = ({
   currentTopic,
   currentSlide,
   currentSlideIndex,
