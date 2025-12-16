@@ -18,6 +18,9 @@ export type Topic = {
   slides: Slide[];
 };
 
+
+
+
 const SlideShow = () => {
   const [topics, setTopics] = useState<Topic[]>([]);
   const [currentTopicIndex, setCurrentTopicIndex] = useState(0);
@@ -273,7 +276,7 @@ const SlideShow = () => {
           bullets: slide.bullet_points
             ?.sort((a: any, b: any) => a.order_index - b.order_index)
             .map((bp: any) => bp.content) || [],
-          imageUrl: slide.image_url || `https://images.unsplash.com/photo-${Math.floor(Math.random() * 1000)}?w=800&h=600&fit=crop`
+          imageUrl: slide.image_url || ``
         })) || []
       }));
       
@@ -375,7 +378,7 @@ const SlideShow = () => {
               
               <button
                 onClick={handleAddTopic}
-                className="w-full px-6 py-4 bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700 rounded-xl font-semibold text-lg transition-all transform hover:scale-[1.02]"
+                className="w-full px-6 py-4 n-600  hover:from-cyan-700 hover:to-purple-700 rounded-xl font-semibold text-lg transition-all transform hover:scale-[1.02]"
               >
                 + Create First Topic
               </button>
@@ -408,7 +411,7 @@ const SlideShow = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-4 md:p-8">
+    <div className="min-h-screen bg-gray-600 border-radius-[50px] p-4 md:p-8">
       <div className="fixed top-4 right-4 z-50 flex gap-2">
         <button
           onClick={() => setDebugMode(!debugMode)}

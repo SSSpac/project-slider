@@ -16,7 +16,7 @@ const Navigation = ({ topics, currentTopicIndex, setCurrentTopicIndex }: Navigat
             onClick={() => setCurrentTopicIndex(index)}
             className={`px-6 py-3 rounded-full text-lg font-semibold transition-all duration-300 transform hover:scale-105 ${
               currentTopicIndex === index
-                ? 'bg-gradient-to-r from-cyan-600 to-purple-600 shadow-lg shadow-cyan-500/25'
+                ? 'bg-cyan-800 shadow-lg shadow-cyan-500/25'
                 : 'bg-gray-800 hover:bg-gray-700 border border-gray-700'
             }`}
           >
